@@ -1,30 +1,27 @@
-import google.generativeai as genai
-from PIL import Image
 import os
-import json_repair
+import random
 import dotenv
+
 from allrecipes import AllRecipes
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
+
+import google.generativeai as genai
+import json_repair
+
 from googleapiclient.discovery import build
+from PIL import Image
 
 app = Flask(__name__)
 all_recipes = AllRecipes()
 
-PROMPT = """
-Analyse the image and return the following information in JSON format
-{
-    "title": "Name of the dish",
-    "description": "Description of the dish",
-    "ingredients": [
-        "ingredient1",
-        "ingredient2"
-    ]
-}"""
-            
+VISION_PROMPT = "Analyse the image and return ONLY the name of the dish."
+
 
 @app.route("/")
 def main():
     articles = all_recipes.homepage()
+
+    random.shuffle(articles)
 
     return render_template("home.html", articles=articles)
 
@@ -40,29 +37,32 @@ def search():
 
     return render_template("search.html", query=query, search_results=search_results)
 
+
+
 @app.route("/image", methods=["POST"])
 def image():
-    genai.configure(api_key=GEMINI_API_KEY)
-    img = request.files.get('image')
+    image = request.files.get('image')
+
+    if not image:
+        return jsonify({"error": "No image uploaded"}), 400
+
+    # Uncomment and configure the following lines according to your setup
+    # genai.configure(api_key=GEMINI_API_KEY)
+    # pil_image = Image.open(image)
     
-    pil_image = Image.open(img)
+    # model = genai.GenerativeModel(model_name="gemini-1.5-flash")
+    # response = model.generate_content([VISION_PROMPT, pil_image])
     
-    model = genai.GenerativeModel(model_name="gemini-1.5-flash")
-    response = model.generate_content([PROMPT, pil_image])
-    
-    response_text = response.text
-    json_repair.loads(response_text)
+    # dish_name = response.text
+    dish_name = "Chicken Tortilla Soup"  # Replace with the actual dish name generation logic
+    youtube_videos = get_youtube_videos(dish_name + " recipe")
 
-    return "Success", 200
+    return jsonify({"recipe": dish_name, "youtube_videos": youtube_videos})
 
 
-@app.route("/recipe/<recipe>")
-def recipe(recipe: str):
-    youtube_videos = get_youtube_data(recipe + " recipe")
-    return render_template("recipe.html", recipe=recipe.title(), youtube_videos=youtube_videos)
 
 
-def get_youtube_data(prompt, max_results=10) -> list[str]:
+def get_youtube_videos(prompt, max_results=10) -> list[str]:
     youtube = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)
     results = []
     

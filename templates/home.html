@@ -1,11 +1,10 @@
 {% from "macros.html" import article_grid %} {% extends 'base.html' %} {% block
-title %}Home{% endblock %} {% block content %}
-<div class="w">
+title %}Home{% endblock %} {% block content %}  <div>
   <div
     class="w-full bg-[url('static/banner.png')] h-[300px] bg-cover bg-center"
   >
     <span
-      class="w-full h-full text-white flex justify-center items-center bg-black bg-opacity-40"
+      class="w-full h-full text-white flex flex-col justify-center items-center bg-black bg-opacity-40"
     >
       <div class="sticky flex items-center">
         <form action="/search">
@@ -19,6 +18,11 @@ title %}Home{% endblock %} {% block content %}
         <i
           class="fa-solid fa-magnifying-glass absolute text-black right-[2%] text-2xl"
         ></i>
+      </div>
+      <div class="mt-4 justify-left flex gap-4 font-semibold">
+        <a href="http://localhost:8080/search?query=apple+pie">Apple Pie</a>
+        <a href="http://localhost:8080/search?query=new+york+pizza">New York Pizza</a>
+        <a href="http://localhost:8080/search?query=veggie+salad">Veggie Salad</a>
       </div>
     </span>
   </div>
@@ -35,19 +39,15 @@ title %}Home{% endblock %} {% block content %}
       {% endfor %}
     </div>
   </div>
-
-  <div
-    class="fixed bottom-0 py-10 border-t w-full flex flex-col items-center bg-white"
-  >
+  <div class="fixed bottom-0 py-10 border-t w-full flex flex-col items-center bg-white">
     <div class="gap-4 flex border-[#435238] text-[#435238]">
-      <form action="/image" method="post" enctype="multipart/form-data">
+      <form id="uploadForm" enctype="multipart/form-data">
         <input
           type="file"
           name="image"
           accept="image/*"
           class="hidden"
           id="fileInput"
-          onchange="this.form.submit()"
         />
         <label
           for="fileInput"
@@ -57,13 +57,44 @@ title %}Home{% endblock %} {% block content %}
           <i class="fa-solid fa-upload"></i>
         </label>
       </form>
-      <button
-        class="border rounded-full w-24 h-20 text-4xl"
-        title="Take a picture"
-      >
-        <i class="fa-solid fa-camera"></i>
-      </button>
     </div>
   </div>
+
+  <div id="recipeResult" class="mt-10 w-full flex justify-center">
+    <!-- This div will be updated with the recipe name and videos -->
+  </div>
+
+  <script>
+    document.getElementById('fileInput').addEventListener('change', function() {
+      const file = this.files[0];
+      if (file) {
+        const form = document.getElementById('uploadForm');
+        const formData = new FormData(form);
+        fetch('/image', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json()) // Assuming server returns JSON content
+        .then(data => {
+          // Create an object URL for the uploaded image
+          const imgURL = URL.createObjectURL(file);
+          
+          // Update the recipe result section
+          const recipeResult = document.getElementById('recipeResult');
+          recipeResult.innerHTML = `
+            <img id="recipeThumbnail" src="${imgURL}" alt="Uploaded Image" style="max-width: 100%;">
+            <h1>${data.recipe}</h1>
+            <div>${data.youtube_videos.map(video => `<iframe width="560" height="315" src="https://www.youtube.com/embed/${video.videoId}" frameborder="0" allowfullscreen></iframe>`).join('')}</div>
+          `;
+
+          // Update the URL
+          history.pushState(null, 'Image Upload', '/image');
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+      }
+    });
+  </script>
 </div>
 {% endblock %}
