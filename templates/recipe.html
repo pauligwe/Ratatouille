@@ -1,0 +1,12 @@
+{% extends 'base.html' %} {% block title %}{{ recipe }}{% endblock %} {% block
+content %}
+<div class="flex flex-col items-center">
+  <img
+    src="https://www.allrecipes.com/thmb/BKQ-5Ix-Uob2C_gdez2idcdrkFQ=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/RM-16727-SouthernPotatoSalad-ddmfs-3x4-6254-b3052e92d11747bbbddfd9b563ff54b3.jpg"
+    class="w-96 h-96 bg-no-repeat object-cover rounded-3xl border border-black mt-20"
+  />
+  <h1 class="text-8xl font-semibold mt-10">{{ recipe }}</h1>
+
+</div>
+
+{% endblock %}

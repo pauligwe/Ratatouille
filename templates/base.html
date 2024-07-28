@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
+    <title>Ratatouille - {% block title %}{% endblock %}</title>
+  </head>
+  <body class="text-[#435238]">
+    <nav class="w-full border-b py-8 flex justify-around">
+      <h1 class="text-6xl font-semibold">Ratatouille</h1>
+      <div class="flex gap-8 items-center text-xl">
+        <a href="/">Potato</a>
+        <a href="/">Potato</a>
+        <a href="/">Potato</a>
+      </div>
+    </nav>
+    {% block content %}{% endblock %}
+  </body>
+</html>
