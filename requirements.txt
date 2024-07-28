@@ -1,0 +1,8 @@
+requests
+yt-dlp
+requests
+python_dotenv
+SpeechRecognition
+flask
+google-generativeai
+json-repair
