@@ -1,0 +1,12 @@
+{% macro article_grid(articles) -%}
+<div
+  class="mt-10 mb-20 grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+>
+  {% for article in articles %}
+  <a href="{{ article['url'] }}" class="border w-72 h-80">
+    <img src="{{ article['image'] }}" class="h-48 w-full object-cover" />
+    <h1 class="mx-2 mt-2 font-bold text-xl">{{ article['name'] }}</h1>
+  </a>
+  {% endfor %}
+</div>
+{%- endmacro %}

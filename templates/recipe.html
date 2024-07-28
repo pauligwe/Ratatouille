@@ -6,6 +6,20 @@ content %}
     class="w-96 h-96 bg-no-repeat object-cover rounded-3xl border border-black mt-20"
   />
   <h1 class="text-8xl font-semibold mt-10">{{ recipe }}</h1>
+  {% for video_id in youtube_videos %}
+
+  <iframe
+    width="1276"
+    height="718"
+    src="https://www.youtube.com/embed/{{ video_id }}"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    referrerpolicy="strict-origin-when-cross-origin"
+    allowfullscreen
+  ></iframe>
+
+
+  {% endfor %}
 
 </div>
 

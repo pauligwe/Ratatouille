@@ -10,13 +10,13 @@
     />
     <title>Ratatouille - {% block title %}{% endblock %}</title>
   </head>
-  <body class="text-[#435238]">
-    <nav class="w-full border-b py-8 flex justify-around">
-      <h1 class="text-6xl font-semibold">Ratatouille</h1>
+  <body>
+    <nav class="w-full border-b py-4 flex justify-around">
+      <a href="/"><img src="/static/logo.png" class="w-20 h-20" /></a>
       <div class="flex gap-8 items-center text-xl">
-        <a href="/">Potato</a>
-        <a href="/">Potato</a>
-        <a href="/">Potato</a>
+        <a href="/">Home</a>
+        <a href="/">About</a>
+        <a href="/">Contact Us</a>
       </div>
     </nav>
     {% block content %}{% endblock %}

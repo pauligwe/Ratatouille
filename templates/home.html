@@ -1,16 +1,17 @@
-{% extends 'base.html' %} {% block title %}Home{% endblock %} {% block content
-%}
-<div class="flex justify-center">
+{% from "macros.html" import article_grid %} {% extends 'base.html' %} {% block
+title %}Home{% endblock %} {% block content %}
+<div class="w">
   <div
     class="w-full bg-[url('static/banner.png')] h-[300px] bg-cover bg-center"
   >
     <span
       class="w-full h-full text-white flex justify-center items-center bg-black bg-opacity-40"
     >
-      <div class="fixed flex items-center">
+      <div class="sticky flex items-center">
         <form action="/search">
           <input
-          name="query"
+            placeholder="Find a recipe"
+            name="query"
             type="text"
             class="text-black rounded-3xl outline-none w-[60vw] text-4xl pl-8 px-16 h-24"
           />
@@ -22,19 +23,43 @@
     </span>
   </div>
 
-  <div class="flex"></div>
+  <div class="w-full flex justify-center mb-48">
+    <div
+      class="mt-10 mb-20 grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-fit"
+    >
+      {% for article in articles %}
+      <a href="{{ article['url'] }}" class="border w-72 h-80">
+        <img src="{{ article['image'] }}" class="h-48 w-full object-cover" />
+        <h1 class="mx-2 mt-2 font-bold text-xl">{{ article['name'] }}</h1>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
 
-  <div class="fixed bottom-0 py-10 border-t w-full flex flex-col items-center">
-    <div class="gap-4 flex border-[#435238]">
+  <div
+    class="fixed bottom-0 py-10 border-t w-full flex flex-col items-center bg-white"
+  >
+    <div class="gap-4 flex border-[#435238] text-[#435238]">
+      <form action="/image" method="post" enctype="multipart/form-data">
+        <input
+          type="file"
+          name="image"
+          accept="image/*"
+          class="hidden"
+          id="fileInput"
+          onchange="this.form.submit()"
+        />
+        <label
+          for="fileInput"
+          class="border rounded-full w-24 h-20 text-4xl cursor-pointer block flex justify-center items-center"
+          title="Upload a picture"
+        >
+          <i class="fa-solid fa-upload"></i>
+        </label>
+      </form>
       <button
         class="border rounded-full w-24 h-20 text-4xl"
-        title="Upload a picture"
-      >
-        <i class="fa-solid fa-upload"></i>
-      </button>
-      <button
-        class="border rounded-full w-24 h-20 text-4xl"
-        title="Upload a picture"
+        title="Take a picture"
       >
         <i class="fa-solid fa-camera"></i>
       </button>
