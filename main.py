@@ -1,5 +1,4 @@
 import os
-import tempfile
 import requests
 import random
 import dotenv
@@ -17,7 +16,16 @@ from PIL import Image
 app = Flask(__name__)
 all_recipes = AllRecipes()
 
-VISION_PROMPT = "Analyse the image and return ONLY the name of the dish."
+VISION_PROMPT = """Analyse the image and return the following in JSON format:
+{
+"title": "Name of the dish",
+"description": "Description of the dish, with a fun fact about it.",
+"ingredients": [
+"ingredient1",
+"ingredient2"
+]
+}
+"""
 
 
 @app.route("/")
@@ -71,20 +79,36 @@ def image():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-    genai.configure(api_key=GEMINI_API_KEY)
+    dish_information = get_dish_information(image)
+    dish_name = dish_information['title']
+    ingredients = dish_information['ingredients']
+    description = dish_information['description']
 
-    model = genai.GenerativeModel(model_name="gemini-1.5-flash")
+    youtube_videos = get_youtube_videos(dish_name + " recipe")
+    search_results = all_recipes.search(dish_name)
+
+    return render_template(
+        'recipe.html',
+        youtube_videos=youtube_videos,
+        recipe=dish_name,
+        ingredients=ingredients,
+        description=description,
+        image_url=image_url, search_results=search_results)
+
+
+def get_dish_information(image: Image) -> dict:
     response = model.generate_content([VISION_PROMPT, image])
 
-    dish_name = response.text.strip()
-    youtube_videos = get_youtube_videos(dish_name + " recipe")
+    dish_information = json_repair.loads(response.text.strip())
 
-    print(image_url)
-    return render_template('recipe.html', youtube_videos=youtube_videos, recipe=dish_name, image_url=image_url)
+    if not (dish_information and dish_information.get('title') and dish_information.get(
+            'description') and dish_information.get('ingredients')):
+        return get_dish_information(image)
+    
+    return dish_information
 
 
 def get_youtube_videos(prompt, max_results=10) -> list[str]:
-    youtube = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)
     results = []
 
     request = youtube.search().list(
@@ -109,6 +133,11 @@ if __name__ == '__main__':
 
     GEMINI_API_KEY = os.environ["GOOGLE_API_KEY"]
     YOUTUBE_API_KEY = os.environ["YOUTUBE_API_KEY"]
+
+    genai.configure(api_key=GEMINI_API_KEY)
+    model = genai.GenerativeModel(model_name="gemini-1.5-flash")
+
+    youtube = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)
 
     # Auto reload for changes to project
     app.jinja_env.auto_reload = True

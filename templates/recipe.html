@@ -1,27 +1,73 @@
-{% extends 'base.html' %} {% block title %}{{ recipe }}{% endblock %} {% block
-content %}
-<div class="flex flex-col items-center">
-  <img
-    class="w-96 h-96 bg-no-repeat object-cover rounded-3xl border border-black mt-20"
-    id="recipeThumbnail"
-    src="{{ image_url }}"
-  />
-  <h1 class="text-8xl font-semibold mt-10">{{ recipe }}</h1>
-  {% for video_id in youtube_videos %}
+{% extends 'base.html' %}
+{% block title %}{{ recipe }}{% endblock %}
+{% block content %}
+<div class="w-full grid grid-cols-1 xl:grid-cols-2 items-center gap-4 mb-10">
+  <div class="h-full flex flex-col items-center">
+    <div class="px-20 flex justify-center flex-col">
+      <img
+      class="w-80 xl:w-full h-96 bg-no-repeat object-cover rounded-3xl border border-black mt-20"
+      id="recipeThumbnail"
+      src="{{ image_url }}"
+    />
+    <h1 class="text-6xl font-semibold mt-10">{{ recipe }}</h1>
+    <p class="mt-4">{{ description }}</p>
+    </div>
+  </div>
 
-  <iframe
-    width="1276"
-    height="718"
-    src="https://www.youtube.com/embed/{{ video_id }}"
-    frameborder="0"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-    referrerpolicy="strict-origin-when-cross-origin"
-    allowfullscreen
-  ></iframe>
-
-
-  {% endfor %}
-
+  <div>
+    <div class="grid-cols-1 px-16 gap-4" id="videoContainer">
+    </div>
+    <div class="w-full flex justify-center mt-4">
+      <button id="viewMoreButton" class="text-xl text-blue-500 hover:text-blue-700 mt-2 flex gap-2 items-center justify-center">
+        <span>View More</span><i class="fa-solid fa-arrow-down"></i>
+      </button>
+    </div>
+  </div>
 </div>
 
+<script>
+  const youtubeVideos = {{ youtube_videos|tojson }};
+  let currentIndex = 0;
+  const videosPerPage = 2;
+  const videoContainer = document.getElementById('videoContainer');
+  const viewMoreButton = document.getElementById('viewMoreButton');
+
+  function loadMoreVideos() {
+    const endIndex = currentIndex + videosPerPage;
+    const videosToShow = youtubeVideos.slice(currentIndex, endIndex);
+
+    videosToShow.forEach(videoId => {
+      const videoElement = document.createElement('div');
+      videoElement.classList.add('relative', 'mt-4');
+      videoElement.style.paddingBottom = '56.25%';
+      videoElement.style.height = '0';
+      videoElement.style.overflow = 'hidden';
+      
+      videoElement.innerHTML = `
+        <iframe
+          src="https://www.youtube.com/embed/${videoId}"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen
+          class="absolute top-0 left-0 w-full h-full"
+        ></iframe>
+      `;
+      
+      videoContainer.appendChild(videoElement);
+    });
+
+    currentIndex += videosPerPage;
+    
+    if (currentIndex >= youtubeVideos.length) {
+      viewMoreButton.style.display = 'none';
+    }
+  }
+
+  viewMoreButton.addEventListener('click', loadMoreVideos);
+
+  // Load the initial videos
+  loadMoreVideos();
+  console.log("hi")
+</script>
 {% endblock %}
