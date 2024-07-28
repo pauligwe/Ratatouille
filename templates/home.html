@@ -1,23 +1,17 @@
-{% from "macros.html" import article_grid %} {% extends 'base.html' %} {% block
-title %}Home{% endblock %} {% block content %}  <div>
-  <div
-    class="w-full bg-[url('static/banner.png')] h-[300px] bg-cover bg-center"
-  >
-    <span
-      class="w-full h-full text-white flex flex-col justify-center items-center bg-black bg-opacity-40"
-    >
+<script src="/static/scanImage.js" defer></script>
+
+{% from "macros.html" import article_grid %}
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<main>
+  <div class="w-full bg-[url('static/banner.png')] h-[300px] bg-cover bg-center">
+    <span class="w-full h-full text-white flex flex-col justify-center items-center bg-black bg-opacity-40">
       <div class="sticky flex items-center">
         <form action="/search">
-          <input
-            placeholder="Find a recipe"
-            name="query"
-            type="text"
-            class="text-black rounded-3xl outline-none w-[60vw] text-4xl pl-8 px-16 h-24"
-          />
+          <input placeholder="Find a recipe" name="query" type="text" class="text-black rounded-3xl outline-none w-[60vw] text-4xl pl-8 px-16 h-24" />
         </form>
-        <i
-          class="fa-solid fa-magnifying-glass absolute text-black right-[2%] text-2xl"
-        ></i>
+        <i class="fa-solid fa-magnifying-glass absolute text-black right-[2%] text-2xl"></i>
       </div>
       <div class="mt-4 justify-left flex gap-4 font-semibold">
         <a href="http://localhost:8080/search?query=apple+pie">Apple Pie</a>
@@ -28,11 +22,9 @@ title %}Home{% endblock %} {% block content %}  <div>
   </div>
 
   <div class="w-full flex justify-center mb-48">
-    <div
-      class="mt-10 mb-20 grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-fit"
-    >
+    <div class="mt-10 mb-20 grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-fit">
       {% for article in articles %}
-      <a href="{{ article['url'] }}" class="border w-72 h-80">
+      <a class="border w-72 h-80" href="#" onclick='submitImageForm("{{ article["image"] }}"); return false;'>
         <img src="{{ article['image'] }}" class="h-48 w-full object-cover" />
         <h1 class="mx-2 mt-2 font-bold text-xl">{{ article['name'] }}</h1>
       </a>
@@ -41,60 +33,13 @@ title %}Home{% endblock %} {% block content %}  <div>
   </div>
   <div class="fixed bottom-0 py-10 border-t w-full flex flex-col items-center bg-white">
     <div class="gap-4 flex border-[#435238] text-[#435238]">
-      <form id="uploadForm" enctype="multipart/form-data">
-        <input
-          type="file"
-          name="image"
-          accept="image/*"
-          class="hidden"
-          id="fileInput"
-        />
-        <label
-          for="fileInput"
-          class="border rounded-full w-24 h-20 text-4xl cursor-pointer block flex justify-center items-center"
-          title="Upload a picture"
-        >
+      <form id="uploadForm" enctype="multipart/form-data" onsubmit="return handleUploadFormSubmit(event)">
+        <input type="file" name="image" accept="image/*" class="hidden" id="fileInput" onchange="submitImageForm(this.files[0])" />
+        <label for="fileInput" class="border rounded-full w-24 h-20 text-4xl cursor-pointer block flex justify-center items-center" title="Upload a picture">
           <i class="fa-solid fa-upload"></i>
         </label>
       </form>
     </div>
   </div>
-
-  <div id="recipeResult" class="mt-10 w-full flex justify-center">
-    <!-- This div will be updated with the recipe name and videos -->
-  </div>
-
-  <script>
-    document.getElementById('fileInput').addEventListener('change', function() {
-      const file = this.files[0];
-      if (file) {
-        const form = document.getElementById('uploadForm');
-        const formData = new FormData(form);
-        fetch('/image', {
-          method: 'POST',
-          body: formData
-        })
-        .then(response => response.json()) // Assuming server returns JSON content
-        .then(data => {
-          // Create an object URL for the uploaded image
-          const imgURL = URL.createObjectURL(file);
-          
-          // Update the recipe result section
-          const recipeResult = document.getElementById('recipeResult');
-          recipeResult.innerHTML = `
-            <img id="recipeThumbnail" src="${imgURL}" alt="Uploaded Image" style="max-width: 100%;">
-            <h1>${data.recipe}</h1>
-            <div>${data.youtube_videos.map(video => `<iframe width="560" height="315" src="https://www.youtube.com/embed/${video.videoId}" frameborder="0" allowfullscreen></iframe>`).join('')}</div>
-          `;
-
-          // Update the URL
-          history.pushState(null, 'Image Upload', '/image');
-        })
-        .catch(error => {
-          console.error('Error:', error);
-        });
-      }
-    });
-  </script>
-</div>
+</main>
 {% endblock %}
