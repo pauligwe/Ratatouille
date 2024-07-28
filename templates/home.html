@@ -23,40 +23,14 @@
   <div class="w-full flex justify-center mb-48">
     {{ article_grid(articles) }}
   </div>
-  <div class="fixed bottom-0 py-10 border-t w-full flex flex-col items-center bg-white">
+  <div class="fixed bottom-0 py-4 lg:py-10 border-t w-full flex flex-col items-center bg-white">
     <div class="gap-4 flex border-[#435238] text-[#435238]">
       <form id="uploadForm" enctype="multipart/form-data" onsubmit="return handleUploadFormSubmit(event)">
         <input type="file" name="image" accept="image/*" class="hidden" id="fileInput" onchange="submitImageForm(this.files[0])" />
-        <label for="fileInput" class="border rounded-full w-24 h-20 text-4xl cursor-pointer block flex justify-center items-center" title="Upload a picture">
+        <label for="fileInput" class="border rounded-full w-12 lg:w-24 h-10 lg:h-20 text-2xl lg:text-4xl cursor-pointer block flex justify-center items-center" title="Upload a picture">
           <i class="fa-solid fa-upload"></i>
         </label>
       </form>
-    </div>
-  </div>
-</main>
-{% endblock %}
-
-<button id="speakButton" class="text-xl text-[#435238] mt-2 flex gap-2 items-center justify-center">
-  <span>Speak Recipe</span>
-  <i class="fa-solid fa-microphone"></i>
-</button>
-
-{% extends 'base.html' %}
-{% block title %}Home{% endblock %}
-{% block content %}
-<main>
-  <div class="fixed bottom-0 py-10 border-t w-full flex flex-col items-center bg-white">
-    <div class="gap-4 flex border-[#435238] text-[#435238]">
-      <form id="uploadForm" enctype="multipart/form-data" onsubmit="return handleUploadFormSubmit(event)">
-        <input type="file" name="image" accept="image/*" class="hidden" id="fileInput" onchange="submitImageForm(this.files[0])" />
-        <label for="fileInput" class="border rounded-full w-24 h-20 text-4xl cursor-pointer block flex justify-center items-center" title="Upload a picture">
-          <i class="fa-solid fa-upload"></i>
-        </label>
-      </form>
-      <button id="speakButton" class="text-xl text-[#435238] mt-2 flex gap-2 items-center justify-center">
-        <span>Speak Recipe</span>
-        <i class="fa-solid fa-microphone"></i>
-      </button>
     </div>
   </div>
 </main>
