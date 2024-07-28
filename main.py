@@ -56,6 +56,25 @@ def search():
 
 @app.route("/image", methods=["GET", "POST"])
 def image():
+    # return render_template(
+    #     "recipe.html",
+    #     youtube_videos=[
+    #         'yjveQ2FcW20',
+    #         'cNu6P-LoPzw',
+    #         '5o8AdTX4VVM',
+    #         'pU0O2fhuf5g',
+    #         'hRR_jM8D38M',
+    #         'FrYxyHFUxzc',
+    #         'masiB3QVb3Q',
+    #         'bj0ERIvQhiE',
+    #         '6iws7gjJEBg',
+    #         'a34S6gjGN4I'],
+    #     recipe='Chapati',
+    #     ingredients=[
+    #         'Whole wheat flour',
+    #         'Water'],
+    #     description="Chapati is a flatbread commonly eaten in India, Pakistan, Bangladesh, and other parts of South Asia. It's made with whole wheat flour and water, and is typically cooked on a tava (griddle). Did you know that chapati is a staple food in many parts of South Asia and is often served with curries, vegetables, and other dishes?",
+    #     image_url='https://www.allrecipes.com/thmb/w6i2iCWWQsRuiWGfTO6c-86eUj4=/282x188/filters:no_upscale():max_bytes(150000):strip_icc():focal(479x0:481x2)/8553184-quick-whole-wheat-chapati-Lenka-4x3-1-4b53f342050f490891486f874d0d0e03.jpg')
     image_url = request.form.get('image_url')
     image_file = request.files.get('image')
 
@@ -105,8 +124,9 @@ def get_dish_information(image: Image) -> dict:
     if not (dish_information and dish_information.get('title') and dish_information.get(
             'description') and dish_information.get('ingredients')):
         return get_dish_information(image)
-    
+
     return dish_information
+
 
 def get_youtube_videos(prompt, max_results=10) -> list[str]:
     results = []
@@ -115,16 +135,19 @@ def get_youtube_videos(prompt, max_results=10) -> list[str]:
         'quiet': True,
         'default_search': 'ytsearch',  # Use YouTube search
         'max_downloads': max_results,  # Limit the number of results
-        'extract_flat': 'in_playlist', # Ensure only metadata is retrieved
+        'extract_flat': 'in_playlist',  # Ensure only metadata is retrieved
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        info = ydl.extract_info(f"ytsearch{max_results}:{prompt}", download=False)
+        info = ydl.extract_info(
+            f"ytsearch{max_results}:{prompt}",
+            download=False)
 
         for entry in info['entries']:
             results.append(entry['id'])
 
     return results
+
 
 if __name__ == '__main__':
     # Load environment variables from .env
