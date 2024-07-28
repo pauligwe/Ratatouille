@@ -1,24 +1,37 @@
-{% extends 'base.html' %}
-{% block title %}{{ recipe }}{% endblock %}
-{% block content %}
+{% extends 'base.html' %} {% block title %}{{ recipe }}{% endblock %} {% block
+content %}
 <div class="w-full grid grid-cols-1 xl:grid-cols-2 items-center gap-4 mb-10">
   <div class="h-full flex flex-col items-center">
     <div class="px-20 flex justify-center flex-col">
       <img
-      class="w-80 xl:w-full h-96 bg-no-repeat object-cover rounded-3xl border border-black mt-20"
-      id="recipeThumbnail"
-      src="{{ image_url }}"
-    />
-    <h1 class="text-6xl font-semibold mt-10">{{ recipe }}</h1>
-    <p class="mt-4">{{ description }}</p>
+        class="w-80 xl:w-full h-96 bg-no-repeat object-cover rounded-3xl border mt-20"
+        id="recipeThumbnail"
+        src="{{ image_url }}"
+      />
+      <h1 class="text-6xl font-semibold mt-10">{{ recipe }}</h1>
+      <p class="mt-4">{{ description }}</p>
+      <p class="mt-4">
+        <div class="flex flex-wrap gap-2">
+          {% for ingredient in ingredients %}
+          <p class="border px-2 py-1 rounded-4xl text-sm">{{ ingredient }}</p>
+          {% endfor %}
+        </div>
+      </p>
+      <div class="flex flex-col gap-4 mt-10">
+        {% for result in search_results %}
+          <a target="_blank" href="{{ result['url'] }}" class="text-blue-500 underline">{{ result['name'] }}</a>
+          {% endfor %}
+      </div>
     </div>
   </div>
 
-  <div>
-    <div class="grid-cols-1 px-16 gap-4" id="videoContainer">
-    </div>
+  <div class="h-full">
+    <div class="grid-cols-1 px-16 gap-4" id="videoContainer"></div>
     <div class="w-full flex justify-center mt-4">
-      <button id="viewMoreButton" class="text-xl text-blue-500 hover:text-blue-700 mt-2 flex gap-2 items-center justify-center">
+      <button
+        id="viewMoreButton"
+        class="text-xl text-blue-500 hover:text-blue-700 mt-2 flex gap-2 items-center justify-center"
+      >
         <span>View More</span><i class="fa-solid fa-arrow-down"></i>
       </button>
     </div>
@@ -42,7 +55,7 @@
       videoElement.style.paddingBottom = '56.25%';
       videoElement.style.height = '0';
       videoElement.style.overflow = 'hidden';
-      
+
       videoElement.innerHTML = `
         <iframe
           src="https://www.youtube.com/embed/${videoId}"
@@ -53,12 +66,12 @@
           class="absolute top-0 left-0 w-full h-full"
         ></iframe>
       `;
-      
+
       videoContainer.appendChild(videoElement);
     });
 
     currentIndex += videosPerPage;
-    
+
     if (currentIndex >= youtubeVideos.length) {
       viewMoreButton.style.display = 'none';
     }
@@ -68,6 +81,5 @@
 
   // Load the initial videos
   loadMoreVideos();
-  console.log("hi")
 </script>
 {% endblock %}

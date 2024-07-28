@@ -1,7 +1,9 @@
+import yt_dlp
 import os
 import requests
 import random
 import dotenv
+import speech_recognition as sr
 
 from allrecipes import AllRecipes
 from flask import Flask, render_template, request, redirect, url_for, jsonify
@@ -10,7 +12,6 @@ from io import BytesIO
 import google.generativeai as genai
 import json_repair
 
-from googleapiclient.discovery import build
 from PIL import Image
 
 app = Flask(__name__)
@@ -107,37 +108,35 @@ def get_dish_information(image: Image) -> dict:
     
     return dish_information
 
-
 def get_youtube_videos(prompt, max_results=10) -> list[str]:
     results = []
 
-    request = youtube.search().list(
-        q=prompt,
-        part='snippet',
-        maxResults=max_results
-    )
+    ydl_opts = {
+        'quiet': True,
+        'default_search': 'ytsearch',  # Use YouTube search
+        'max_downloads': max_results,  # Limit the number of results
+        'extract_flat': 'in_playlist', # Ensure only metadata is retrieved
+    }
 
-    responses = request.execute()
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(f"ytsearch{max_results}:{prompt}", download=False)
 
-    for item in responses['items']:
-        if item['id']['kind'] == 'youtube#video':
-            video_id = item['id']['videoId']
-            results.append(video_id)
+        for entry in info['entries']:
+            results.append(entry['id'])
 
     return results
-
 
 if __name__ == '__main__':
     # Load environment variables from .env
     dotenv.load_dotenv()
 
     GEMINI_API_KEY = os.environ["GOOGLE_API_KEY"]
-    YOUTUBE_API_KEY = os.environ["YOUTUBE_API_KEY"]
 
+    # Suppress logging warnings
+    os.environ["GRPC_VERBOSITY"] = "ERROR"
+    os.environ["GLOG_minloglevel"] = "2"
     genai.configure(api_key=GEMINI_API_KEY)
     model = genai.GenerativeModel(model_name="gemini-1.5-flash")
-
-    youtube = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)
 
     # Auto reload for changes to project
     app.jinja_env.auto_reload = True
@@ -145,3 +144,30 @@ if __name__ == '__main__':
 
     # Run on all interfaces on port 8080 in debug mode
     app.run(debug=True, host='0.0.0.0', port=8080)
+
+# def listen():
+# Initialize recognizer
+    # recognizer = sr.Recognizer()
+
+    # Use a microphone as source
+    # with sr.Microphone() as source:
+    #     print("Please say something:")
+    #     audio = recognizer.listen(source)
+
+    #     try:
+    #         # Recognize speech using Google Web Speech API
+    #         text = recognizer.recognize_google(audio)
+    #         return {"text":text,
+    #                 "error": False,
+    #         }
+    #     #Error cases
+    #     except sr.UnknownValueError:
+    #         {
+    #             "error": True,
+    #             "message": "Let me know if I can help you with anything else"
+    #         }
+    #     except sr.RequestError as e:
+    #         {
+    #             "error" : True,
+    #             "message": f"Could not request results; {e}"
+    #         }

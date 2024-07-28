@@ -1,4 +1,9 @@
+let lock = false;
+
 async function submitImageForm(image) {
+  if (lock) return;
+  lock = true;
+
   const formData = new FormData();
 
   if (typeof image === 'string') {
@@ -15,7 +20,31 @@ async function submitImageForm(image) {
       body: formData
     });
 
-    document.body.innerHTML = await response.text();
+    const responseText = await response.text();
+
+    // Function to insert HTML and execute script tags
+    function insertHTMLWithScripts(html) {
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = html;
+
+      // Insert the new content
+      document.body.innerHTML = tempDiv.innerHTML;
+
+      // Find and evaluate all script tags
+      const scripts = tempDiv.getElementsByTagName('script');
+      for (const script of scripts) {
+        const newScript = document.createElement('script');
+        if (script.src) {
+          newScript.src = script.src;
+        } else {
+          newScript.textContent = script.textContent;
+        }
+        document.head.appendChild(newScript).parentNode.removeChild(newScript);
+      }
+    }
+
+    // Insert the HTML and execute the scripts
+    insertHTMLWithScripts(responseText);
 
     // Update the URL
     history.pushState(null, 'Image Upload', '/image');
