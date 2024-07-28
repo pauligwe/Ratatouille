@@ -56,32 +56,12 @@ def search():
 
 @app.route("/image", methods=["GET", "POST"])
 def image():
-    # return render_template(
-    #     "recipe.html",
-    #     youtube_videos=[
-    #         'yjveQ2FcW20',
-    #         'cNu6P-LoPzw',
-    #         '5o8AdTX4VVM',
-    #         'pU0O2fhuf5g',
-    #         'hRR_jM8D38M',
-    #         'FrYxyHFUxzc',
-    #         'masiB3QVb3Q',
-    #         'bj0ERIvQhiE',
-    #         '6iws7gjJEBg',
-    #         'a34S6gjGN4I'],
-    #     recipe='Chapati',
-    #     ingredients=[
-    #         'Whole wheat flour',
-    #         'Water'],
-    #     description="Chapati is a flatbread commonly eaten in India, Pakistan, Bangladesh, and other parts of South Asia. It's made with whole wheat flour and water, and is typically cooked on a tava (griddle). Did you know that chapati is a staple food in many parts of South Asia and is often served with curries, vegetables, and other dishes?",
-    #     image_url='https://www.allrecipes.com/thmb/w6i2iCWWQsRuiWGfTO6c-86eUj4=/282x188/filters:no_upscale():max_bytes(150000):strip_icc():focal(479x0:481x2)/8553184-quick-whole-wheat-chapati-Lenka-4x3-1-4b53f342050f490891486f874d0d0e03.jpg')
     image_url = request.form.get('image_url')
     image_file = request.files.get('image')
 
     if not image_url and not image_file:
         if request.method == 'GET':
             return redirect(url_for('main'))
-
         return jsonify({"error": "No image URL or file provided"}), 400
 
     try:
@@ -89,11 +69,11 @@ def image():
             response = requests.get(image_url)
             response.raise_for_status()
             image = Image.open(BytesIO(response.content))
+            uploaded_image_url = upload_image_to_freeimage(image, image_url=image_url)
         else:
-            file_path = os.path.join("static", "uploads", image_file.filename)
-            image_file.save(file_path)
-            image_url = file_path
-            image = Image.open(file_path)
+            uploaded_image_url = upload_image_to_freeimage(image_file=image_file)
+            image = Image.open(image_file)
+
     except requests.RequestException as e:
         return jsonify({"error": str(e)}), 500
     except Exception as e:
@@ -103,7 +83,6 @@ def image():
     dish_name = dish_information['title']
     ingredients = dish_information['ingredients']
     description = dish_information['description']
-
     youtube_videos = get_youtube_videos(dish_name + " recipe")
     search_results = all_recipes.search(dish_name)
 
@@ -113,8 +92,34 @@ def image():
         recipe=dish_name,
         ingredients=ingredients,
         description=description,
-        image_url=image_url, search_results=search_results)
+        image_url=uploaded_image_url,
+        search_results=search_results
+    )
 
+def upload_image_to_freeimage(image=None, image_url=None, image_file=None):
+    api_key = os.environ.get('FREEIMAGE_API_KEY')
+    url = "https://freeimage.host/api/1/upload"
+    payload = {
+        'key': api_key,
+        'action': 'upload',
+        'format': 'json'
+    }
+
+    if image_url:
+        payload['source'] = image_url
+    elif image_file:
+        files = {'source': image_file}
+    else:
+        raise ValueError("No image source provided")
+
+    response = requests.post(url, data=payload, files=files if image_file else None)
+    response.raise_for_status()
+    response_data = response.json()
+    
+    if response_data['status_code'] != 200:
+        raise Exception(f"Error uploading image: {response_data}")
+
+    return response_data['image']['url']
 
 def get_dish_information(image: Image) -> dict:
     response = model.generate_content([VISION_PROMPT, image])
