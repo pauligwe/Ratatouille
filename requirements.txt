@@ -6,3 +6,6 @@ SpeechRecognition
 flask
 google-generativeai
 json-repair
+pillow
+lxml
+faust-cchardet

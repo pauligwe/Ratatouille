@@ -4,11 +4,11 @@
 {% block title %}Home{% endblock %}
 {% block content %}
 <main>
-  <div class="w-full bg-[url('static/banner.png')] h-[300px] bg-cover bg-center">
+  <div class="w-full bg-[url('static/banner.png')] h-48 lg:h-[300px] bg-cover bg-center">
     <span class="w-full h-full text-white flex flex-col justify-center items-center bg-black bg-opacity-40">
       <div class="sticky flex items-center">
         <form action="/search" id="searchForm">
-          <input placeholder="Find a recipe" name="query" type="text" class="text-black rounded-3xl outline-none w-[60vw] text-xl lg:text-4xl pl-4 lg:pl-8 lg:px-16 h-16 lg:h-24" />
+          <input placeholder="Find a recipe" name="query" type="text" class="text-black rounded-3xl outline-none w-full lg:w-[60vw] text-xl lg:text-4xl pl-4 lg:pl-8 lg:px-16 h-16 lg:h-24" />
         </form>
         <i class="fa-solid fa-magnifying-glass absolute text-black right-[6%] lg:right-[2%] text-2xl cursor-pointer" onclick="document.getElementById('searchForm').submit();"></i>
       </div>
@@ -31,6 +31,32 @@
           <i class="fa-solid fa-upload"></i>
         </label>
       </form>
+    </div>
+  </div>
+</main>
+{% endblock %}
+
+<button id="speakButton" class="text-xl text-[#435238] mt-2 flex gap-2 items-center justify-center">
+  <span>Speak Recipe</span>
+  <i class="fa-solid fa-microphone"></i>
+</button>
+
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<main>
+  <div class="fixed bottom-0 py-10 border-t w-full flex flex-col items-center bg-white">
+    <div class="gap-4 flex border-[#435238] text-[#435238]">
+      <form id="uploadForm" enctype="multipart/form-data" onsubmit="return handleUploadFormSubmit(event)">
+        <input type="file" name="image" accept="image/*" class="hidden" id="fileInput" onchange="submitImageForm(this.files[0])" />
+        <label for="fileInput" class="border rounded-full w-24 h-20 text-4xl cursor-pointer block flex justify-center items-center" title="Upload a picture">
+          <i class="fa-solid fa-upload"></i>
+        </label>
+      </form>
+      <button id="speakButton" class="text-xl text-[#435238] mt-2 flex gap-2 items-center justify-center">
+        <span>Speak Recipe</span>
+        <i class="fa-solid fa-microphone"></i>
+      </button>
     </div>
   </div>
 </main>
