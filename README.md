@@ -1,11 +1,23 @@
 # 🍽️ Ratatouille – A Modern Recipe Discovery Platform
-### Discover, analyze, and share culinary art like never before.
 
-**Ratatouille** is a web application that transforms how you explore recipes. It leverages web scraping and image analysis with generative AI to offer a seamless and engaging culinary experience.
+**Ratatouille** is an AI powered web application that transforms how you explore recipes. It leverages web scraping and image analysis with generative AI to offer a seamless and engaging culinary experience.
+
+<details>
+  <summary><b>User Interface Preview</b></summary>
+<br>
+
+<p align="center">
+<img src="https://github.com/user-attachments/assets/c469f814-162b-464e-ae67-7142ea8893ff">
+<br>
+<img src="https://github.com/user-attachments/assets/2ada188d-b810-45ce-b555-a541ee624c39">
+<br>
+<img src="https://github.com/user-attachments/assets/c9c77e9b-324b-4af5-a597-98c997510481">
+</p>
+</details>
 
 ## 🔗 Devpost
 
-Explore our project on [Devpost](https://devpost.com/software/ratatouille-xtq1ir) for an in-depth look at our project’s mission and impact.
+Explore our project on [Devpost](https://devpost.com/software/ratatouille-xtq1ir) for an in-depth look at our project's mission and impact.
 
 ## 🚀 Features
 
